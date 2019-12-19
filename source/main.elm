@@ -2,7 +2,7 @@ module Main exposing (Msg(..), main, update, view)
 
 import Browser
 import Html exposing (Html, a, button, div, img, text)
-import Html.Attributes exposing (alt, href, src)
+import Html.Attributes exposing (alt, href, src, id)
 import Html.Events exposing (onClick)
 
 type alias Model = Int
