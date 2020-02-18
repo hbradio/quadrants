@@ -1,4 +1,3 @@
 [build]
-  # Transpile the elm. Also, copy index.html into public so that importing the other files works.
-  command = "elm make source/main.elm --output public/elm.js && cp index.html public/index.html"
+  command = "elm make source/main.elm --output public/elm.js"
   publish = "public/"

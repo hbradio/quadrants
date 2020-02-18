@@ -1,18 +1,22 @@
 {
-  "name": "my-glitch-app",
+  "name": "quadrants",
   "version": "0.0.1",
-  "description": "What am I about?",
+  "description": "Decision making via quadrants.",
   "main": "server.js",
   "scripts": {
-    "prestart": "elm make source/main.elm --output public/elm.js",
-    "start": "npm run prestart && node server.js"
+    "watch": "watch 'npm run build-elm' source",
+    "dev": "elm-live source/Main.elm --open --dir=public/ -- --debug --output=public/elm.js",
+    "build-elm": "elm make source/Main.elm --output public/elm.js",
+    "start": "npm run build-elm && node server.js"
   },
   "devDependencies": {
-    "natives": "^1.1.6"
+    "elm": "^0.19.0-bugfix2",
+    "elm-live": "^4.0.2",
+    "natives": "^1.1.6",
+    "watch": "^1.0.2"
   },
   "dependencies": {
     "express": "^4.16.3",
-    "elm": "0.19.0-bugfix2",
     "elm-upgrade": "0.19.2",
     "elm-format": "^0.8.0"
   },
