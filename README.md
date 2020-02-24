@@ -7,8 +7,8 @@ Quadrants
 
 ## Usage
 ```bash
-> yarn install
-> yarn dev
+> npm install
+> npm run dev
 ```
 
 
