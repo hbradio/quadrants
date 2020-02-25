@@ -8,8 +8,16 @@ import Random
 import Random.List
 
 
+
+-- https://dev.to/mickeyvip/writing-a-word-memory-game-in-elm-part-4-spicing-things-up-with-randomness-58ei
+
+
 type alias Words =
     List String
+
+
+type alias ChosenWordHandler =
+    ( Maybe String, List String ) -> Msg
 
 
 wordBank : Words
@@ -23,7 +31,7 @@ wordBank =
     ]
 
 
-chooseWord : Words -> (( Maybe String, List String ) -> Msg) -> Cmd Msg
+chooseWord : Words -> ChosenWordHandler -> Cmd Msg
 chooseWord wordList command =
     Random.List.choose wordList
         |> Random.generate command
@@ -39,11 +47,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model 0 "Loading..." "Just wait." 1, chooseWord wordBank FirstWordChosen )
-
-
-
--- https://dev.to/mickeyvip/writing-a-word-memory-game-in-elm-part-4-spicing-things-up-with-randomness-58ei
+    ( Model 0 "Loading..." "Loading..." 1, chooseWord wordBank FirstWordChosen )
 
 
 main =
@@ -84,22 +88,33 @@ update msg model =
             ( model, chooseWord wordBank FirstWordChosen )
 
         FirstWordChosen randomResult ->
+            let
+                selectedWord =
+                    Tuple.first randomResult
+
+                remainingWords =
+                    Tuple.second randomResult
+            in
             ( { model
                 | message =
-                    case Tuple.first randomResult of
+                    case selectedWord of
                         Nothing ->
                             ""
 
                         Just word ->
                             word
               }
-            , chooseWord (Tuple.second randomResult) SecondWordChosen
+            , chooseWord remainingWords SecondWordChosen
             )
 
         SecondWordChosen randomResult ->
+            let
+                selectedWord =
+                    Tuple.first randomResult
+            in
             ( { model
                 | otherMessage =
-                    case Tuple.first randomResult of
+                    case selectedWord of
                         Nothing ->
                             ""
 

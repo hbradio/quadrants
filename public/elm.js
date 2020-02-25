@@ -10003,7 +10003,7 @@ var $author$project$Main$wordBank = _List_fromArray(
 	['hey', 'yo', 'bro', 'thing', 'what?', 'make it stop']);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		A4($author$project$Main$Model, 0, 'Loading...', 'Just wait.', 1),
+		A4($author$project$Main$Model, 0, 'Loading...', 'Loading...', 1),
 		A2($author$project$Main$chooseWord, $author$project$Main$wordBank, $author$project$Main$FirstWordChosen));
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -10052,33 +10052,34 @@ var $author$project$Main$update = F2(
 					A2($author$project$Main$chooseWord, $author$project$Main$wordBank, $author$project$Main$FirstWordChosen));
 			case 'FirstWordChosen':
 				var randomResult = msg.a;
+				var selectedWord = randomResult.a;
+				var remainingWords = randomResult.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
 							message: function () {
-								var _v1 = randomResult.a;
-								if (_v1.$ === 'Nothing') {
+								if (selectedWord.$ === 'Nothing') {
 									return '';
 								} else {
-									var word = _v1.a;
+									var word = selectedWord.a;
 									return word;
 								}
 							}()
 						}),
-					A2($author$project$Main$chooseWord, randomResult.b, $author$project$Main$SecondWordChosen));
+					A2($author$project$Main$chooseWord, remainingWords, $author$project$Main$SecondWordChosen));
 			default:
 				var randomResult = msg.a;
+				var selectedWord = randomResult.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
 							otherMessage: function () {
-								var _v2 = randomResult.a;
-								if (_v2.$ === 'Nothing') {
+								if (selectedWord.$ === 'Nothing') {
 									return '';
 								} else {
-									var word = _v2.a;
+									var word = selectedWord.a;
 									return word;
 								}
 							}()
