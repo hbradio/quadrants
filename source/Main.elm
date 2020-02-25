@@ -50,6 +50,7 @@ init _ =
     ( Model 0 "Loading..." "Loading..." 1, chooseWord wordBank FirstWordChosen )
 
 
+main : Program () Model Msg
 main =
     Browser.element
         { init = init
@@ -126,7 +127,7 @@ update msg model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
