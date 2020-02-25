@@ -12,22 +12,34 @@ type alias Words =
     List String
 
 
-chooseWords : Words -> Cmd Msg
-chooseWords wordList =
+wordBank : Words
+wordBank =
+    [ "hey"
+    , "yo"
+    , "bro"
+    , "thing"
+    , "what?"
+    , "make it stop"
+    ]
+
+
+chooseWord : Words -> (( Maybe String, List String ) -> Msg) -> Cmd Msg
+chooseWord wordList command =
     Random.List.choose wordList
-        |> Random.generate WordChosen
+        |> Random.generate command
 
 
 type alias Model =
     { value : Int
     , message : String
+    , otherMessage : String
     , dieFace : Int
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model 0 "Loading..." 1, chooseWords [ "hey", "yo" ] )
+    ( Model 0 "Loading..." "Just wait." 1, chooseWord wordBank FirstWordChosen )
 
 
 
@@ -48,7 +60,9 @@ type Msg
     | Decrement
     | Roll
     | NewFace Int
-    | WordChosen ( Maybe String, List String )
+    | PickWords
+    | FirstWordChosen ( Maybe String, List String )
+    | SecondWordChosen ( Maybe String, List String )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -66,9 +80,25 @@ update msg model =
         NewFace newFace ->
             ( { model | dieFace = newFace }, Cmd.none )
 
-        WordChosen randomResult ->
+        PickWords ->
+            ( model, chooseWord wordBank FirstWordChosen )
+
+        FirstWordChosen randomResult ->
             ( { model
                 | message =
+                    case Tuple.first randomResult of
+                        Nothing ->
+                            ""
+
+                        Just word ->
+                            word
+              }
+            , chooseWord (Tuple.second randomResult) SecondWordChosen
+            )
+
+        SecondWordChosen randomResult ->
+            ( { model
+                | otherMessage =
                     case Tuple.first randomResult of
                         Nothing ->
                             ""
@@ -93,6 +123,8 @@ view model =
         , div [] [ text (String.fromInt model.value) ]
         , button [ onClick Increment ] [ text "+" ]
         , div [] [ text model.message ]
+        , div [] [ text model.otherMessage ]
+        , button [ onClick PickWords ] [ text "Pick Words" ]
         , div [] [ text (String.fromInt model.dieFace) ]
         , button [ onClick Roll ] [ text "Roll" ]
         ]

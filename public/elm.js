@@ -9648,13 +9648,13 @@ var $elm$core$Basics$never = function (_v0) {
 	}
 };
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$Model = F3(
-	function (value, message, dieFace) {
-		return {dieFace: dieFace, message: message, value: value};
-	});
-var $author$project$Main$WordChosen = function (a) {
-	return {$: 'WordChosen', a: a};
+var $author$project$Main$FirstWordChosen = function (a) {
+	return {$: 'FirstWordChosen', a: a};
 };
+var $author$project$Main$Model = F4(
+	function (value, message, otherMessage, dieFace) {
+		return {dieFace: dieFace, message: message, otherMessage: otherMessage, value: value};
+	});
 var $elm$random$Random$Generator = function (a) {
 	return {$: 'Generator', a: a};
 };
@@ -9992,18 +9992,19 @@ var $elm$random$Random$generate = F2(
 			$elm$random$Random$Generate(
 				A2($elm$random$Random$map, tagger, generator)));
 	});
-var $author$project$Main$chooseWords = function (wordList) {
-	return A2(
-		$elm$random$Random$generate,
-		$author$project$Main$WordChosen,
-		$elm_community$random_extra$Random$List$choose(wordList));
-};
+var $author$project$Main$chooseWord = F2(
+	function (wordList, command) {
+		return A2(
+			$elm$random$Random$generate,
+			command,
+			$elm_community$random_extra$Random$List$choose(wordList));
+	});
+var $author$project$Main$wordBank = _List_fromArray(
+	['hey', 'yo', 'bro', 'thing', 'what?', 'make it stop']);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		A3($author$project$Main$Model, 0, 'Loading...', 1),
-		$author$project$Main$chooseWords(
-			_List_fromArray(
-				['hey', 'yo'])));
+		A4($author$project$Main$Model, 0, 'Loading...', 'Just wait.', 1),
+		A2($author$project$Main$chooseWord, $author$project$Main$wordBank, $author$project$Main$FirstWordChosen));
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
@@ -10012,6 +10013,9 @@ var $author$project$Main$subscriptions = function (model) {
 };
 var $author$project$Main$NewFace = function (a) {
 	return {$: 'NewFace', a: a};
+};
+var $author$project$Main$SecondWordChosen = function (a) {
+	return {$: 'SecondWordChosen', a: a};
 };
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -10042,7 +10046,11 @@ var $author$project$Main$update = F2(
 						model,
 						{dieFace: newFace}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'PickWords':
+				return _Utils_Tuple2(
+					model,
+					A2($author$project$Main$chooseWord, $author$project$Main$wordBank, $author$project$Main$FirstWordChosen));
+			case 'FirstWordChosen':
 				var randomResult = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -10058,11 +10066,29 @@ var $author$project$Main$update = F2(
 								}
 							}()
 						}),
+					A2($author$project$Main$chooseWord, randomResult.b, $author$project$Main$SecondWordChosen));
+			default:
+				var randomResult = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							otherMessage: function () {
+								var _v2 = randomResult.a;
+								if (_v2.$ === 'Nothing') {
+									return '';
+								} else {
+									var word = _v2.a;
+									return word;
+								}
+							}()
+						}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$Decrement = {$: 'Decrement'};
 var $author$project$Main$Increment = {$: 'Increment'};
+var $author$project$Main$PickWords = {$: 'PickWords'};
 var $author$project$Main$Roll = {$: 'Roll'};
 var $author$project$Main$view = function (model) {
 	return A2(
@@ -10120,6 +10146,23 @@ var $author$project$Main$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
+						$elm$html$Html$text(model.otherMessage)
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$Main$PickWords)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Pick Words')
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
 						$elm$html$Html$text(
 						$elm$core$String$fromInt(model.dieFace))
 					])),
@@ -10138,4 +10181,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{},"unions":{"Main.Msg":{"args":[],"tags":{"Increment":[],"Decrement":[],"Roll":[],"NewFace":["Basics.Int"],"WordChosen":["( Maybe.Maybe String.String, List.List String.String )"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{},"unions":{"Main.Msg":{"args":[],"tags":{"Increment":[],"Decrement":[],"Roll":[],"NewFace":["Basics.Int"],"PickWords":[],"FirstWordChosen":["( Maybe.Maybe String.String, List.List String.String )"],"SecondWordChosen":["( Maybe.Maybe String.String, List.List String.String )"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));
