@@ -9652,8 +9652,8 @@ var $author$project$Main$FirstWordChosen = function (a) {
 	return {$: 'FirstWordChosen', a: a};
 };
 var $author$project$Main$Model = F4(
-	function (value, message, otherMessage, dieFace) {
-		return {dieFace: dieFace, message: message, otherMessage: otherMessage, value: value};
+	function (value, xAxisPair, yAxisPair, dieFace) {
+		return {dieFace: dieFace, value: value, xAxisPair: xAxisPair, yAxisPair: yAxisPair};
 	});
 var $elm$random$Random$Generator = function (a) {
 	return {$: 'Generator', a: a};
@@ -10000,10 +10000,21 @@ var $author$project$Main$chooseWord = F2(
 			$elm_community$random_extra$Random$List$choose(wordList));
 	});
 var $author$project$Main$wordBank = _List_fromArray(
-	['hey', 'yo', 'bro', 'thing', 'what?', 'make it stop']);
+	[
+		_Utils_Tuple2('sweet', 'savory'),
+		_Utils_Tuple2('conservative', 'liberal'),
+		_Utils_Tuple2('modest', 'gaudy'),
+		_Utils_Tuple2('broad', 'narrow'),
+		_Utils_Tuple2('sweet', 'sassy')
+	]);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		A4($author$project$Main$Model, 0, 'Loading...', 'Loading...', 1),
+		A4(
+			$author$project$Main$Model,
+			0,
+			_Utils_Tuple2('', ''),
+			_Utils_Tuple2('', ''),
+			1),
 		A2($author$project$Main$chooseWord, $author$project$Main$wordBank, $author$project$Main$FirstWordChosen));
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -10052,35 +10063,35 @@ var $author$project$Main$update = F2(
 					A2($author$project$Main$chooseWord, $author$project$Main$wordBank, $author$project$Main$FirstWordChosen));
 			case 'FirstWordChosen':
 				var randomResult = msg.a;
-				var selectedWord = randomResult.a;
-				var remainingWords = randomResult.b;
+				var selectedWordPair = randomResult.a;
+				var remainingWordPairs = randomResult.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							message: function () {
-								if (selectedWord.$ === 'Nothing') {
-									return '';
+							xAxisPair: function () {
+								if (selectedWordPair.$ === 'Nothing') {
+									return _Utils_Tuple2('', '');
 								} else {
-									var word = selectedWord.a;
-									return word;
+									var wordPair = selectedWordPair.a;
+									return wordPair;
 								}
 							}()
 						}),
-					A2($author$project$Main$chooseWord, remainingWords, $author$project$Main$SecondWordChosen));
+					A2($author$project$Main$chooseWord, remainingWordPairs, $author$project$Main$SecondWordChosen));
 			default:
 				var randomResult = msg.a;
-				var selectedWord = randomResult.a;
+				var selectedWordPair = randomResult.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							otherMessage: function () {
-								if (selectedWord.$ === 'Nothing') {
-									return '';
+							yAxisPair: function () {
+								if (selectedWordPair.$ === 'Nothing') {
+									return _Utils_Tuple2('', '');
 								} else {
-									var word = selectedWord.a;
-									return word;
+									var wordPair = selectedWordPair.a;
+									return wordPair;
 								}
 							}()
 						}),
@@ -10140,14 +10151,28 @@ var $author$project$Main$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text(model.message)
+						$elm$html$Html$text(model.xAxisPair.a)
 					])),
 				A2(
 				$elm$html$Html$div,
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text(model.otherMessage)
+						$elm$html$Html$text(model.xAxisPair.b)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(model.yAxisPair.a)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(model.yAxisPair.b)
 					])),
 				A2(
 				$elm$html$Html$button,
@@ -10182,4 +10207,4 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{},"unions":{"Main.Msg":{"args":[],"tags":{"Increment":[],"Decrement":[],"Roll":[],"NewFace":["Basics.Int"],"PickWords":[],"FirstWordChosen":["( Maybe.Maybe String.String, List.List String.String )"],"SecondWordChosen":["( Maybe.Maybe String.String, List.List String.String )"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Main.WordPair":{"args":[],"type":"( String.String, String.String )"}},"unions":{"Main.Msg":{"args":[],"tags":{"Increment":[],"Decrement":[],"Roll":[],"NewFace":["Basics.Int"],"PickWords":[],"FirstWordChosen":["( Maybe.Maybe Main.WordPair, List.List Main.WordPair )"],"SecondWordChosen":["( Maybe.Maybe Main.WordPair, List.List Main.WordPair )"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));

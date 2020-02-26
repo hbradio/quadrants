@@ -12,26 +12,29 @@ import Random.List
 -- https://dev.to/mickeyvip/writing-a-word-memory-game-in-elm-part-4-spicing-things-up-with-randomness-58ei
 
 
-type alias Words =
-    List String
+type alias WordPair =
+    ( String, String )
+
+
+type alias WordPairs =
+    List WordPair
 
 
 type alias ChosenWordHandler =
-    ( Maybe String, List String ) -> Msg
+    ( Maybe WordPair, List WordPair ) -> Msg
 
 
-wordBank : Words
+wordBank : WordPairs
 wordBank =
-    [ "hey"
-    , "yo"
-    , "bro"
-    , "thing"
-    , "what?"
-    , "make it stop"
+    [ ( "sweet", "savory" )
+    , ( "conservative", "liberal" )
+    , ( "modest", "gaudy" )
+    , ( "broad", "narrow" )
+    , ( "sweet", "sassy" )
     ]
 
 
-chooseWord : Words -> ChosenWordHandler -> Cmd Msg
+chooseWord : WordPairs -> ChosenWordHandler -> Cmd Msg
 chooseWord wordList command =
     Random.List.choose wordList
         |> Random.generate command
@@ -39,15 +42,15 @@ chooseWord wordList command =
 
 type alias Model =
     { value : Int
-    , message : String
-    , otherMessage : String
+    , xAxisPair : WordPair
+    , yAxisPair : WordPair
     , dieFace : Int
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model 0 "Loading..." "Loading..." 1, chooseWord wordBank FirstWordChosen )
+    ( Model 0 ( "", "" ) ( "", "" ) 1, chooseWord wordBank FirstWordChosen )
 
 
 main : Program () Model Msg
@@ -66,8 +69,8 @@ type Msg
     | Roll
     | NewFace Int
     | PickWords
-    | FirstWordChosen ( Maybe String, List String )
-    | SecondWordChosen ( Maybe String, List String )
+    | FirstWordChosen ( Maybe WordPair, List WordPair )
+    | SecondWordChosen ( Maybe WordPair, List WordPair )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -90,37 +93,37 @@ update msg model =
 
         FirstWordChosen randomResult ->
             let
-                selectedWord =
+                selectedWordPair =
                     Tuple.first randomResult
 
-                remainingWords =
+                remainingWordPairs =
                     Tuple.second randomResult
             in
             ( { model
-                | message =
-                    case selectedWord of
+                | xAxisPair =
+                    case selectedWordPair of
                         Nothing ->
-                            ""
+                            ( "", "" )
 
-                        Just word ->
-                            word
+                        Just wordPair ->
+                            wordPair
               }
-            , chooseWord remainingWords SecondWordChosen
+            , chooseWord remainingWordPairs SecondWordChosen
             )
 
         SecondWordChosen randomResult ->
             let
-                selectedWord =
+                selectedWordPair =
                     Tuple.first randomResult
             in
             ( { model
-                | otherMessage =
-                    case selectedWord of
+                | yAxisPair =
+                    case selectedWordPair of
                         Nothing ->
-                            ""
+                            ( "", "" )
 
-                        Just word ->
-                            word
+                        Just wordPair ->
+                            wordPair
               }
             , Cmd.none
             )
@@ -138,8 +141,10 @@ view model =
         , button [ onClick Decrement ] [ text "-" ]
         , div [] [ text (String.fromInt model.value) ]
         , button [ onClick Increment ] [ text "+" ]
-        , div [] [ text model.message ]
-        , div [] [ text model.otherMessage ]
+        , div [] [ text (Tuple.first model.xAxisPair) ]
+        , div [] [ text (Tuple.second model.xAxisPair) ]
+        , div [] [ text (Tuple.first model.yAxisPair) ]
+        , div [] [ text (Tuple.second model.yAxisPair) ]
         , button [ onClick PickWords ] [ text "Pick Words" ]
         , div [] [ text (String.fromInt model.dieFace) ]
         , button [ onClick Roll ] [ text "Roll" ]
